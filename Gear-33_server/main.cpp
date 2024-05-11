@@ -22,9 +22,6 @@ extern "C" {
 using namespace std;
 
 int main(void) {
-	sqlite3* db = abrirDB();
-
-
 	WSADATA wsaData;
 	SOCKET conn_socket;
 	SOCKET comm_socket;
