@@ -103,7 +103,7 @@ int main(void) {
 
 			sprintf(sendBuff, "%d", resultado);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-			printf("Response sent: %s \n", sendBuff);
+			printf("Respuesta enviada: %s \n", sendBuff);
 		}
 
 	} while (1);
