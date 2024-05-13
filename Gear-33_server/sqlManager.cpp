@@ -12,6 +12,7 @@ extern "C" {
 
 
 #include "string.h"
+#include "Usuario.h"
 #include <iostream>
 
 using namespace std;
@@ -27,13 +28,13 @@ sqlite3* abrirDB() {
 	return db;
 }
 
-int inicioSesion(char dni[], char contrasena[]) {
+int inicioSesion(char dni[], char contrasena[], Usuario& u) {
 	sqlite3 *db = abrirDB();
 	int result = 0;
 
 	sqlite3_stmt *stmt;
 
-	char sql[] = "SELECT dni, contrasena FROM empleado WHERE dni = ?";
+	char sql[] = "SELECT * FROM Usuario WHERE dni = ?";
 
 	result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK) {
@@ -54,6 +55,16 @@ int inicioSesion(char dni[], char contrasena[]) {
 		if (strcmp(dni, (char*) sqlite3_column_text(stmt, 0)) == 0
 				&& strcmp(contrasena, (char*) sqlite3_column_text(stmt, 1))
 						== 0) {
+
+			/*
+				strcpy(u.getDni(), (char*) sqlite3_column_text(stmt, 0))
+				strcpy(u.getNombre(), (char*) sqlite3_column_text(stmt, 1))
+				...
+				...
+				...
+			 */
+
+
 			sqlite3_finalize(stmt);
 			sqlite3_close(db);
 			return 1;

@@ -12,8 +12,9 @@ extern "C" {
 #include "sqlite3.h"
 }
 
+#include "Usuario.h"
 
 sqlite3* abrirDB();
-int inicioSesion(char dni[], char contrasena[]);
+int inicioSesion(char dni[], char contrasena[], Usuario& u);
 
 #endif /* SQLMANAGER_H_ */

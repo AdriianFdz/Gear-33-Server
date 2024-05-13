@@ -15,6 +15,7 @@ extern "C" {
 
 
 #include "sqlManager.h"
+#include "Usuario.h"
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
@@ -96,10 +97,19 @@ int main(void) {
 			char contrasena[strlen(recvBuff)] = "";
 			strcpy(contrasena, recvBuff);
 
-			int resultado = inicioSesion(dni, contrasena);
+			Usuario u;
+			int resultado = inicioSesion(dni, contrasena, u);
+
+			/*
+			 * Aqui tendrias que hacer varios
+			 * sprintf de cada propiedad del usuario u
+			 * enviandola al cliente una a una
+			 */
 
 			sprintf(sendBuff, "%d", resultado);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+
 			printf("Respuesta enviada: %s \n", sendBuff);
 		}
 
