@@ -97,6 +97,8 @@ int main(void) {
 			char contrasena[strlen(recvBuff)] = "";
 			strcpy(contrasena, recvBuff);
 
+			cout<<dni<<endl;
+			cout<<contrasena<<endl;
 			Usuario u;
 			int resultado = inicioSesion(dni, contrasena, u);
 
@@ -106,8 +108,28 @@ int main(void) {
 			 * enviandola al cliente una a una
 			 */
 
+			sprintf(sendBuff, "%s", u.getDni());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getNombre());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getApellido());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getFechaNac());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getTelefono());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getDireccion());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%s", u.getContrasena());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			sprintf(sendBuff, "%d", u.getIdCiudad());
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+
 			sprintf(sendBuff, "%d", resultado);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+
 
 
 			printf("Respuesta enviada: %s \n", sendBuff);

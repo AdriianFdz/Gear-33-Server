@@ -44,7 +44,7 @@ Usuario::Usuario(const Usuario &other) {
 	this->idCiudad = idCiudad;
 }
 
-char* Usuario::getDni() const {
+char* Usuario::getDni() {
 	return this->dni;
 }
 
@@ -52,7 +52,7 @@ void Usuario::setDni(char *dni) {
 	strcpy(this->dni, dni);
 }
 
-char* Usuario::getNombre() const {
+char* Usuario::getNombre() {
 	return this->nombre;
 }
 
@@ -60,7 +60,7 @@ void Usuario::setNombre(char *nombre) {
 	strcpy(this->nombre, nombre);
 }
 
-char* Usuario::getApellido() const {
+char* Usuario::getApellido() {
 	return this->apellido;
 }
 
@@ -68,7 +68,7 @@ void Usuario::setApellido(char *apellido) {
 	strcpy(this->apellido, apellido);
 }
 
-char* Usuario::getFechaNac() const {
+char* Usuario::getFechaNac() {
 	return this->fechaNacimiento;
 }
 
@@ -76,7 +76,7 @@ void Usuario::setFechaNac(char *fecha) {
 	strcpy(this->fechaNacimiento, fecha);
 }
 
-char* Usuario::getTelefono() const {
+char* Usuario::getTelefono() {
 	return this->telefono;
 }
 
@@ -84,7 +84,7 @@ void Usuario::setTelefono(char *telefono) {
 	strcpy(this->telefono, telefono);
 }
 
-char* Usuario::getDireccion() const {
+char* Usuario::getDireccion() {
 	return this->direccion;
 }
 
@@ -92,7 +92,7 @@ void Usuario::setDireccion(char *direccion) {
 	strcpy(this->direccion, direccion);
 }
 
-char* Usuario::getContrasena() const {
+char* Usuario::getContrasena() {
 	return this->contrasena;
 }
 
@@ -100,7 +100,7 @@ void Usuario::setContrasena(char *contrasena) {
 	strcpy(this->contrasena, contrasena);
 }
 
-int Usuario::getIdCiudad() const {
+int Usuario::getIdCiudad() {
 	return this->idCiudad;
 }
 

@@ -53,16 +53,18 @@ int inicioSesion(char dni[], char contrasena[], Usuario& u) {
 	result = sqlite3_step(stmt);
 	if (result == SQLITE_ROW) {
 		if (strcmp(dni, (char*) sqlite3_column_text(stmt, 0)) == 0
-				&& strcmp(contrasena, (char*) sqlite3_column_text(stmt, 1))
-						== 0) {
+				&& strcmp(contrasena, (char*) sqlite3_column_text(stmt, 6)) == 0) {
 
-			/*
-				strcpy(u.getDni(), (char*) sqlite3_column_text(stmt, 0))
-				strcpy(u.getNombre(), (char*) sqlite3_column_text(stmt, 1))
-				...
-				...
-				...
-			 */
+			cout<<"ENTRADO"<<endl;
+
+			u.setDni((char*) sqlite3_column_text(stmt, 0));
+			u.setNombre((char*) sqlite3_column_text(stmt, 1));
+			u.setApellido((char*) sqlite3_column_text(stmt, 2));
+			u.setFechaNac((char*) sqlite3_column_text(stmt, 3));
+			u.setTelefono((char*) sqlite3_column_text(stmt, 4));
+			u.setDireccion((char*) sqlite3_column_text(stmt, 5));
+			u.setContrasena((char*) sqlite3_column_text(stmt, 6));
+			u.setIdCiudad(sqlite3_column_int(stmt, 7));
 
 
 			sqlite3_finalize(stmt);
