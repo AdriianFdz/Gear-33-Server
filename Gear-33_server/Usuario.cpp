@@ -44,3 +44,66 @@ Usuario::Usuario(const Usuario &other) {
 	this->idCiudad = idCiudad;
 }
 
+char* Usuario::getDni() const {
+	return this->dni;
+}
+
+void Usuario::setDni(char *dni) {
+	strcpy(this->dni, dni);
+}
+
+char* Usuario::getNombre() const {
+	return this->nombre;
+}
+
+void Usuario::setNombre(char *nombre) {
+	strcpy(this->nombre, nombre);
+}
+
+char* Usuario::getApellido() const {
+	return this->apellido;
+}
+
+void Usuario::setApellido(char *apellido) {
+	strcpy(this->apellido, apellido);
+}
+
+char* Usuario::getFechaNac() const {
+	return this->fechaNacimiento;
+}
+
+void Usuario::setFechaNac(char *fecha) {
+	strcpy(this->fechaNacimiento, fecha);
+}
+
+char* Usuario::getTelefono() const {
+	return this->telefono;
+}
+
+void Usuario::setTelefono(char *telefono) {
+	strcpy(this->telefono, telefono);
+}
+
+char* Usuario::getDireccion() const {
+	return this->direccion;
+}
+
+void Usuario::setDireccion(char *direccion) {
+	strcpy(this->direccion, direccion);
+}
+
+char* Usuario::getContrasena() const {
+	return this->contrasena;
+}
+
+void Usuario::setContrasena(char *contrasena) {
+	strcpy(this->contrasena, contrasena);
+}
+
+int Usuario::getIdCiudad() const {
+	return this->idCiudad;
+}
+
+void Usuario::setIdCiudad(int id) {
+	this->idCiudad = id;
+}

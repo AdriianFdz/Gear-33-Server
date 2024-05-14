@@ -18,11 +18,29 @@ private:
 	char direccion[51];
 	char contrasena[51];
 	int idCiudad;
+
 public:
 	Usuario(char* dni, char* nombre, char* apellido, char* fechaNacimiento, char* telefono, char* direccion, char* contrasena, int idCiudad);
 	Usuario();
 	virtual ~Usuario();
 	Usuario(const Usuario &other);
+	char* getDni() const;
+	void setDni(char* dni);
+	char* getNombre() const;
+	void setNombre(char* nombre);
+	char* getApellido() const;
+	void setApellido(char* apellido);
+	char* getFechaNac() const;
+	void setFechaNac(char* fecha);
+	char* getTelefono() const;
+	void setTelefono(char* telefono);
+	char* getDireccion() const;
+	void setDireccion(char* direccion);
+	char* getContrasena() const;
+	void setContrasena(char * contrasena);
+	int getIdCiudad() const;
+	void setIdCiudad(int id);
+
 };
 
 #endif /* USUARIO_H_ */
