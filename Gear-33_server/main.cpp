@@ -133,6 +133,136 @@ int main(void) {
 
 
 			printf("Respuesta enviada: %s \n", sendBuff);
+
+		}
+
+		if(strcmp(recvBuff, "COMP_REGISTRO") == 0) {
+			Usuario u;
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+			u.setDni(dni);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char nombre[strlen(recvBuff)] = "";
+			strcpy(nombre, recvBuff);
+			u.setNombre(nombre);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char apellido[strlen(recvBuff)] = "";
+			strcpy(apellido, recvBuff);
+			u.setApellido(apellido);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fecha[strlen(recvBuff)] = "";
+			strcpy(fecha, recvBuff);
+			u.setFechaNac(fecha);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char direccion[strlen(recvBuff)] = "";
+			strcpy(direccion, recvBuff);
+			u.setDireccion(direccion);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char telefono[strlen(recvBuff)] = "";
+			strcpy(telefono, recvBuff);
+			u.setTelefono(telefono);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char contrasena[strlen(recvBuff)] = "";
+			strcpy(contrasena, recvBuff);
+			u.setContrasena(contrasena);
+
+			printf("Datos de registro recibidos\n");
+
+			anadirUsuario(u);
+
+
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_NOMBRE") == 0){
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char nombreNuevo[strlen(recvBuff)] = "";
+			strcpy(nombreNuevo, recvBuff);
+
+			modificarNombreUsuario(dni, nombreNuevo);
+
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_DNI") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dniNuevo[strlen(recvBuff)] = "";
+			strcpy(dniNuevo, recvBuff);
+
+			modificarDniUsuario(dni, dniNuevo);
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_APELLIDO") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char apellidoNuevo[strlen(recvBuff)] = "";
+			strcpy(apellidoNuevo, recvBuff);
+
+			modificarApellidoUsuario(dni, apellidoNuevo);
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_FECHA") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fechaNueva[strlen(recvBuff)] = "";
+			strcpy(fechaNueva, recvBuff);
+
+			modificarFechaUsuario(dni, fechaNueva);
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_DIRECCION") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char direccionNueva[strlen(recvBuff)] = "";
+			strcpy(direccionNueva, recvBuff);
+
+			modificarDireccionUsuario(dni, direccionNueva);
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_TELEFONO") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char telefonoNuevo[strlen(recvBuff)] = "";
+			strcpy(telefonoNuevo, recvBuff);
+
+			modificarTelefonoUsuario(dni, telefonoNuevo);
+		}
+
+		if(strcmp(recvBuff, "COMP_MODIF_CONTRASENA") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char contrasenaNueva[strlen(recvBuff)] = "";
+			strcpy(contrasenaNueva, recvBuff);
+
+			modificarContrasenaUsuario(dni, contrasenaNueva);
 		}
 
 	} while (1);
