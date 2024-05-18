@@ -139,39 +139,25 @@ int main(void) {
 		if(strcmp(recvBuff, "COMP_REGISTRO") == 0) {
 			Usuario u;
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char dni[strlen(recvBuff)] = "";
-			strcpy(dni, recvBuff);
-			u.setDni(dni);
+			u.setDni(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char nombre[strlen(recvBuff)] = "";
-			strcpy(nombre, recvBuff);
-			u.setNombre(nombre);
+			u.setNombre(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char apellido[strlen(recvBuff)] = "";
-			strcpy(apellido, recvBuff);
-			u.setApellido(apellido);
+			u.setApellido(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char fecha[strlen(recvBuff)] = "";
-			strcpy(fecha, recvBuff);
-			u.setFechaNac(fecha);
+			u.setFechaNac(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char direccion[strlen(recvBuff)] = "";
-			strcpy(direccion, recvBuff);
-			u.setDireccion(direccion);
+			u.setDireccion(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char telefono[strlen(recvBuff)] = "";
-			strcpy(telefono, recvBuff);
-			u.setTelefono(telefono);
+			u.setTelefono(recvBuff);
 
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			char contrasena[strlen(recvBuff)] = "";
-			strcpy(contrasena, recvBuff);
-			u.setContrasena(contrasena);
+			u.setContrasena(recvBuff);
 
 			printf("Datos de registro recibidos\n");
 

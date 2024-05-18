@@ -9,7 +9,7 @@ extern "C" {
 #include "sqlite3.h"
 }
 
-
+#include <windows.h>
 
 #include "string.h"
 #include "Usuario.h"
@@ -202,10 +202,14 @@ int anadirUsuario(Usuario u) {
 
 		result = sqlite3_step(stmt);
 		if (result != SQLITE_DONE) {
+			sqlite3_finalize(stmt);
+			sqlite3_close(db);
 			printf("Error inserting new data into Usuario\n");
 			return result;
 		}
-		printf("Usuario anadido correctamente\n");
+		cout << "Usuario con DNI " << u.getDni() << " anadido correctamente" << endl;
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
 		return 0;
 	}
 }
