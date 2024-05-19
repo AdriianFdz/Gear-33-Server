@@ -359,7 +359,39 @@ int main(void) {
 			}
 		}
 
+		if(strcmp(recvBuff, "ADQUIRIR_COCHE") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fecha_ini[11];
+			strcpy(fecha_ini, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fecha_fin[11];
+			strcpy(fecha_fin, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char tipo_adquisicion[9];
+			strcpy(tipo_adquisicion, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			float precio_adquisicion = atof(recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[10];
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char matricula[8];
+			strcpy(matricula, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int n_dias = atoi(recvBuff);
+			/*
+			 * FALTA COMPROBAR QUE EL NUMERO DE DIAS ES MAYOR A LA FECHA FIN DEL QUE ESTA
+			 */
+			adquirirCoche(fecha_ini, fecha_fin, precio_adquisicion, dni, matricula, tipo_adquisicion);
+		}
 	} while (1);
+
 
 }
 

@@ -33,4 +33,5 @@ int obtenerNumeroCoches(int precioMin, int precioMax, int& numero);
 int obtenerNumeroCochesTotal(int& numero);
 int obtenerCochesTotal(Coche* listaCoches);
 
+int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, char* dni_usuario, char* matricula, char* tipo_adquisicion);
 #endif /* SQLMANAGER_H_ */
