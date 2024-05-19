@@ -16,6 +16,7 @@ extern "C" {
 
 #include "sqlManager.h"
 #include "Usuario.h"
+#include "Coche.h"
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
@@ -249,6 +250,113 @@ int main(void) {
 			strcpy(contrasenaNueva, recvBuff);
 
 			modificarContrasenaUsuario(dni, contrasenaNueva);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_POR_PRECIO") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMin = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMax = atoi(recvBuff);
+
+			int numeroCoches = 0;
+			obtenerNumeroCoches(precioMin, precioMax, numeroCoches);
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_COCHES_POR_PRECIO") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMin = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMax = atoi(recvBuff);
+
+			int numeroCoches = 0;
+			obtenerNumeroCoches(precioMin, precioMax, numeroCoches);
+			Coche listaCoches[numeroCoches];
+
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			obtenerCoches(precioMin, precioMax, listaCoches);
+
+			for (int i = 0; i < numeroCoches; i++) {
+				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
+				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getColor());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getPotencia());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%f", listaCoches[i].getPrecio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getAnyo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getModelo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCambio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCombustible());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
+		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_TOTAL") == 0) {
+			int numeroCoches = 0;
+			obtenerNumeroCochesTotal(numeroCoches);
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_COCHES_TOTAL") == 0) {
+
+			int numeroCoches = 0;
+			obtenerNumeroCochesTotal(numeroCoches);
+			Coche listaCoches[numeroCoches];
+
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			obtenerCochesTotal(listaCoches);
+
+			for (int i = 0; i < numeroCoches; i++) {
+				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
+				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getColor());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getPotencia());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%f", listaCoches[i].getPrecio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getAnyo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getModelo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCambio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCombustible());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
 		}
 
 	} while (1);

@@ -13,6 +13,7 @@ extern "C" {
 }
 
 #include "Usuario.h"
+#include "Coche.h"
 
 sqlite3* abrirDB();
 int inicioSesion(char dni[], char contrasena[], Usuario& u);
@@ -26,5 +27,10 @@ int modificarTelefonoUsuario(char dni[10], char telefonoNuevo[10]);
 int modificarDireccionUsuario(char dni[10], char direccionNueva[51]);
 int modificarContrasenaUsuario(char dni[10], char contrasenaNueva[51]);
 int modificarCiudadUsuario(char dni[10], int id_ciudad);
+
+int obtenerCoches(int precioMin, int precioMax, Coche* listaCoches);
+int obtenerNumeroCoches(int precioMin, int precioMax, int& numero);
+int obtenerNumeroCochesTotal(int& numero);
+int obtenerCochesTotal(Coche* listaCoches);
 
 #endif /* SQLMANAGER_H_ */
