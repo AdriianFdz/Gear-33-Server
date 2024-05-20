@@ -317,6 +317,8 @@ int main(void) {
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 		}
 
+
+
 		if(strcmp(recvBuff, "OBTENER_COCHES_TOTAL") == 0) {
 
 			int numeroCoches = 0;
@@ -389,6 +391,76 @@ int main(void) {
 			 * FALTA COMPROBAR QUE EL NUMERO DE DIAS ES MAYOR A LA FECHA FIN DEL QUE ESTA
 			 */
 			adquirirCoche(fecha_ini, fecha_fin, precio_adquisicion, dni, matricula, tipo_adquisicion);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_ADQUISICIONES_POR_DNI") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[11];
+			strcpy(dni, recvBuff);
+			int numeroAdquisiciones;
+			obtenerNumeroAdquisiciones(numeroAdquisiciones, dni);
+			sprintf(sendBuff, "%i", numeroAdquisiciones);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+		}
+
+		if(strcmp(recvBuff, "OBTENER_ADQUISICIONES_POR_DNI") == 0) {
+				int numeroAdquisiciones;
+				char dni[11];
+
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				strcpy(dni, sendBuff);
+
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				numeroAdquisiciones = atoi(recvBuff);
+
+				Adquisicion listaAdquisicion[numeroAdquisiciones];
+
+				obtenerAdquisicionesPorDni(dni, listaAdquisicion);
+
+
+				for (int i = 0; i < numeroAdquisiciones ; i++) {
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getTipoAdquisicion());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaInicio());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaFin());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%f", listaAdquisicion[i].getPrecioAdquisicion());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMatricula());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getColor());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getPotencia());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%f", listaAdquisicion[i].getCoche().getPrecio());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getAnyo());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getModelo());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCambio());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCombustible());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMarca());
+					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+					cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
+				}
 		}
 	} while (1);
 

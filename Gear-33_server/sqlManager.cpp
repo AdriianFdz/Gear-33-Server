@@ -14,6 +14,7 @@ extern "C" {
 #include "string.h"
 #include "Usuario.h"
 #include "Coche.h"
+#include "Adquisicion.h"
 #include <iostream>
 
 using namespace std;
@@ -882,6 +883,88 @@ int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, ch
 
 
 	cout << "Adquisicion con matricula " << matricula << " anadida correctamente" << endl;
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+int obtenerNumeroAdquisiciones(int &numero, char *dni) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT count(*) FROM Adquisicion WHERE dni_usuario = ?";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_text(stmt, 1, dni, strlen(dni),
+			SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_step(stmt);
+
+	numero = sqlite3_column_int(stmt, 0);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+
+}
+
+int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT a.tipo_adquisicion, a.fecha_inicio, a.fecha_fin, a.precio_adquisicion, c.matricula, c.color, c.potencia, c.precio_base, c.anyo, mo.nombre, mo.cambio, mo.combustible, ma.nombre FROM Adquisicion a, Coche c, Modelo mo, Marca ma WHERE a.matricula = c.matricula AND c.id_modelo = mo.id AND mo.id_marca = ma.id AND a.dni_usuario = ?";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement1\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_text(stmt, 1, dni, strlen(dni),
+			SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	int contador = 0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			listaAdquisicion[contador].setTipoAdquisicion((char*) sqlite3_column_text(stmt, 0));
+			listaAdquisicion[contador].setFechaInicio((char*) sqlite3_column_text(stmt, 1));
+			listaAdquisicion[contador].setFechaFin((char*) sqlite3_column_text(stmt, 2));
+			listaAdquisicion[contador].setPrecioAdquisicion(sqlite3_column_double(stmt, 3));
+			listaAdquisicion[contador].getCoche().setMatricula((char*) sqlite3_column_text(stmt, 4));
+			listaAdquisicion[contador].getCoche().setColor((char*) sqlite3_column_text(stmt, 5));
+			listaAdquisicion[contador].getCoche().setPotencia(sqlite3_column_int(stmt, 6));
+			listaAdquisicion[contador].getCoche().setPrecio(sqlite3_column_double(stmt, 7));
+			listaAdquisicion[contador].getCoche().setAnyo(sqlite3_column_int(stmt, 8));
+			listaAdquisicion[contador].getCoche().setModelo((char*) sqlite3_column_text(stmt, 9));
+			listaAdquisicion[contador].getCoche().setCambio((char*) sqlite3_column_text(stmt, 10));
+			listaAdquisicion[contador].getCoche().setCombustible((char*) sqlite3_column_text(stmt, 11));
+			listaAdquisicion[contador].getCoche().setMarca((char*) sqlite3_column_text(stmt, 12));
+			contador++;
+		}
+	} while (result == SQLITE_ROW);
 
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
