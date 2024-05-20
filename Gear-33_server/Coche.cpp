@@ -12,13 +12,13 @@
 using namespace std;
 
 Coche::Coche() {
-	strcpy(this->matricula, "");
-	strcpy(this->marca, "");
-	strcpy(this->modelo, "");
-	strcpy(this->color, "");
+	strcpy(this->matricula, "asfd");
+	strcpy(this->marca, "asfd");
+	strcpy(this->modelo, "asdf");
+	strcpy(this->color, "asf");
 	this->potencia = 0;
-	strcpy(this->combustible, "");
-	strcpy(this->cambio, "");
+	strcpy(this->combustible, "asdf");
+	strcpy(this->cambio, "asdf");
 	this->anyo = 0;
 	this->precio = 0;
 

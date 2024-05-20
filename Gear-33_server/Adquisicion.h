@@ -12,8 +12,8 @@
 class Adquisicion {
 private:
 	char tipoAdquisicion[51];
-	char fechaInicio[11];
-	char fechaFin[11];
+	char fechaInicio[51];
+	char fechaFin[51];
 	float precioAdquisicion;
 	Coche c;
 
@@ -32,7 +32,7 @@ public:
 	void setFechaFin(char* fechaFin);
 	float getPrecioAdquisicion();
 	void setPrecioAdquisicion(float precio);
-	Coche getCoche();
+	Coche& getCoche();
 	void setCoche(Coche c);
 
 };

@@ -926,6 +926,7 @@ int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 	sqlite3 *db = abrirDB();
 	sqlite3_stmt *stmt;
 
+
 	char sql[] = "SELECT a.tipo_adquisicion, a.fecha_inicio, a.fecha_fin, a.precio_adquisicion, c.matricula, c.color, c.potencia, c.precio_base, c.anyo, mo.nombre, mo.cambio, mo.combustible, ma.nombre FROM Adquisicion a, Coche c, Modelo mo, Marca ma WHERE a.matricula = c.matricula AND c.id_modelo = mo.id AND mo.id_marca = ma.id AND a.dni_usuario = ?";
 
 	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
@@ -935,8 +936,7 @@ int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 		return 0;
 	}
 
-	result = sqlite3_bind_text(stmt, 1, dni, strlen(dni),
-			SQLITE_STATIC);
+	result = sqlite3_bind_text(stmt, 1, dni, strlen(dni), SQLITE_STATIC);
 	if (result != SQLITE_OK) {
 		printf("Error binding parameters\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -962,6 +962,8 @@ int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 			listaAdquisicion[contador].getCoche().setCambio((char*) sqlite3_column_text(stmt, 10));
 			listaAdquisicion[contador].getCoche().setCombustible((char*) sqlite3_column_text(stmt, 11));
 			listaAdquisicion[contador].getCoche().setMarca((char*) sqlite3_column_text(stmt, 12));
+
+			cout<<"COCHEE: "<<listaAdquisicion[contador].getCoche().getMatricula();
 			contador++;
 		}
 	} while (result == SQLITE_ROW);

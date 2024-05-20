@@ -405,14 +405,17 @@ int main(void) {
 		}
 
 		if(strcmp(recvBuff, "OBTENER_ADQUISICIONES_POR_DNI") == 0) {
-				int numeroAdquisiciones;
+
+
+
+				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				char dni[11];
+				strcpy(dni, recvBuff);
 
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-				strcpy(dni, sendBuff);
-
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+				int numeroAdquisiciones;
 				numeroAdquisiciones = atoi(recvBuff);
+
 
 				Adquisicion listaAdquisicion[numeroAdquisiciones];
 
