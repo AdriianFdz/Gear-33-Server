@@ -165,8 +165,6 @@ int main(void) {
 			int idCiudad;
 			idCiudad = atoi(recvBuff);
 
-			cout<<"ANTES DE ENTRAR EN BD: "<<u.getIdCiudad();
-
 			printf("Datos de registro recibidos\n");
 
 			anadirUsuario(u, idCiudad);
