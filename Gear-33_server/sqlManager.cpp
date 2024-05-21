@@ -92,8 +92,6 @@ int anadirUsuario(Usuario u, int idCiudad) {
 	sqlite3 *db = abrirDB();
 	sqlite3_stmt *stmt;
 
-	cout<<"DESPUES DE ENTRAR EN BD: "<<u.getIdCiudad()<<endl;
-	cout<<"DESPUES DE ENTRAR EN BD2: "<<idCiudad<<endl;
 
 	char sql[] = "SELECT * FROM Usuario WHERE dni = ?";
 
