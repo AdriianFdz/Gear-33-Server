@@ -15,10 +15,11 @@ extern "C" {
 #include "Usuario.h"
 #include "Coche.h"
 #include "Adquisicion.h"
+#include "Provincia.h"
 
 sqlite3* abrirDB();
 int inicioSesion(char dni[], char contrasena[], Usuario& u);
-int anadirUsuario(Usuario u);
+int anadirUsuario(Usuario u, int idCiudad);
 
 int modificarDniUsuario(char dni[10], char dniNuevo[10]);
 int modificarNombreUsuario(char dni[10], char nombreNuevo[51]);
@@ -38,4 +39,11 @@ int obtenerNumeroAdquisiciones(int& numero, char* dni);
 int obtenerAdquisicionesPorDni(char* dni, Adquisicion* listaAdquisicion);
 
 int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, char* dni_usuario, char* matricula, char* tipo_adquisicion);
+
+int obtenerNumeroProvincias(int *numero);
+int guardarProvincias(Provincia provincias[]);
+
+int existeCiudad(char ciudad[51], int id_prov, int* id_ciudad);
+int anadirCiudad(char* nombreCiudad, int id_provincia, int* id_ciudad);
+
 #endif /* SQLMANAGER_H_ */

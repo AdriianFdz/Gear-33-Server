@@ -160,9 +160,16 @@ int main(void) {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			u.setContrasena(recvBuff);
 
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			u.setIdCiudad(atoi(recvBuff));
+			int idCiudad;
+			idCiudad = atoi(recvBuff);
+
+			cout<<"ANTES DE ENTRAR EN BD: "<<u.getIdCiudad();
+
 			printf("Datos de registro recibidos\n");
 
-			anadirUsuario(u);
+			anadirUsuario(u, idCiudad);
 
 
 		}
@@ -464,7 +471,55 @@ int main(void) {
 
 					cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
 				}
+
 		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_PROVINCIAS") == 0) {
+			int numeroProvs;
+			obtenerNumeroProvincias(&numeroProvs);
+
+			sprintf(sendBuff, "%i", numeroProvs);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+		}
+
+		if(strcmp(recvBuff, "OBTENER_PROVINCIAS") == 0) {
+			int numeroProvs;
+			obtenerNumeroProvincias(&numeroProvs);
+			Provincia p[numeroProvs];
+			guardarProvincias(p);
+
+			sprintf(sendBuff, "%i", numeroProvs);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			for (int i = 0; i < numeroProvs ; i++) {
+				sprintf(sendBuff, "%i", p[i].getId());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", p[i].getNombre());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
+		}
+
+		if(strcmp(recvBuff, "ANADIR_CIUDAD") == 0) {
+			int idCiudad;
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char nombreCiudad[51];
+			strcpy(nombreCiudad, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int idProvincia;
+			idProvincia = atoi(recvBuff);
+
+
+			anadirCiudad(nombreCiudad, idProvincia, &idCiudad);
+
+			sprintf(sendBuff, "%i", idCiudad);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+		}
+
 	} while (1);
 
 
