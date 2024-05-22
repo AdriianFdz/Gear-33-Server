@@ -1339,3 +1339,44 @@ int anadirCiudad(char* nombreCiudad, int id_provincia, int* id_ciudad) {
 		return 0;
 	}
 }
+
+int obtenerCiudad(int idCiudad, char* nombreCiudad) {
+    sqlite3 *db = abrirDB();
+
+    sqlite3_stmt *stmt;
+
+
+    char sql[] = "SELECT nombre FROM Ciudad WHERE id = ?";
+
+    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+    if (result != SQLITE_OK) {
+        printf("Error preparing statement\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return result;
+    }
+
+    result = sqlite3_bind_int(stmt, 1, idCiudad);
+    if (result != SQLITE_OK) {
+    	printf("Error binding parameters\n");
+    	printf("%s\n", sqlite3_errmsg(db));
+    	sqlite3_finalize(stmt);
+    	sqlite3_close(db);
+    	return result;
+    }
+
+
+    result = sqlite3_step(stmt);
+
+    if (result == SQLITE_ROW) {
+			strcpy(nombreCiudad, ((char*) sqlite3_column_text(stmt, 0)));
+
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return 1;
+    }
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}

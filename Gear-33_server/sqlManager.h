@@ -55,4 +55,6 @@ int guardarProvincias(Provincia provincias[]);
 int existeCiudad(char ciudad[51], int id_prov, int* id_ciudad);
 int anadirCiudad(char* nombreCiudad, int id_provincia, int* id_ciudad);
 
+int obtenerCiudad(int idCiudad, char* nombreCiudad);
+
 #endif /* SQLMANAGER_H_ */

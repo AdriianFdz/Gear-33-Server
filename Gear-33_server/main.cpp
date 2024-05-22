@@ -254,6 +254,18 @@ int main(void) {
 			modificarContrasenaUsuario(dni, contrasenaNueva);
 		}
 
+		if(strcmp(recvBuff, "COMP_MODIF_CIUDAD") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[strlen(recvBuff)] = "";
+			strcpy(dni, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int idCiudad;
+			idCiudad = atoi(recvBuff);
+
+			modificarCiudadUsuario(dni, idCiudad);
+		}
+
 		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_POR_PRECIO") == 0) {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			int precioMin = atoi(recvBuff);
@@ -625,7 +637,25 @@ int main(void) {
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 		}
 
+		if(strcmp(recvBuff, "OBTENER_CIUDAD") == 0) {
+			int idCiudad;
+			char nombreCiudad[51];
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			idCiudad = atoi(recvBuff);
+
+
+			//Funcion bd
+			obtenerCiudad(idCiudad, nombreCiudad);
+
+
+			sprintf(sendBuff, "%s", nombreCiudad);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+		}
+
 	} while (1);
+
 
 
 }
