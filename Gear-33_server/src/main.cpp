@@ -9,16 +9,16 @@
 #include <iostream>
 
 extern "C" {
-#include "sqlite3.h"
+#include "../include/sqlite3.h"
 }
 
 
 
-#include "sqlManager.h"
-#include "Usuario.h"
-#include "Coche.h"
-#include "Log.h"
-#include "Fichero.h"
+#include "../include/sqlManager.h"
+#include "../include/Usuario.h"
+#include "../include/Coche.h"
+#include "../include/Log.h"
+#include "../include/Fichero.h"
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000

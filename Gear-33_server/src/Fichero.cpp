@@ -5,7 +5,7 @@
  *      Author: oierc
  */
 
-#include "Fichero.h"
+#include "../include/Fichero.h"
 #include <string.h>
 #include <stdlib.h>
 #include <string.h>

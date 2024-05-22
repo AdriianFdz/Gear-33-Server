@@ -6,18 +6,18 @@
  */
 
 extern "C" {
-#include "sqlite3.h"
+#include "../../include/sqlite3.h"
 }
 
 #include <windows.h>
-
-#include "string.h"
-#include "Usuario.h"
-#include "Coche.h"
-#include "Adquisicion.h"
+#include <string.h>
 #include <iostream>
-#include "Provincia.h"
-#include "Fichero.h"
+
+#include "../../include/Usuario.h"
+#include "../../include/Coche.h"
+#include "../../include/Adquisicion.h"
+#include "../../include/Provincia.h"
+#include "../../include/Fichero.h"
 
 using namespace std;
 

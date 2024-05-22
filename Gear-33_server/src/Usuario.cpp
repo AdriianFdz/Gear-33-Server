@@ -5,8 +5,8 @@
  *      Author: seven
  */
 
-#include "Usuario.h"
-#include "string.h"
+#include <string.h>
+#include "../include/Usuario.h"
 
 Usuario::Usuario(char* dni, char* nombre, char* apellido, char* fechaNacimiento, char* telefono, char* direccion, char* contrasena, int idCiudad){
 	strcpy(this->dni, dni);

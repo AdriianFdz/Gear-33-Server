@@ -5,7 +5,7 @@
  *      Author: Unai
  */
 
-#include "Log.h"
+#include "../include/Log.h"
 #include <iostream>
 using namespace std;
 #include <fstream>
