@@ -17,7 +17,8 @@ using namespace std;
 Fichero::Fichero() {
 	strcpy(this->database, "");
 	strcpy(this->log, "");
-
+	strcpy(this->ip, "");
+	puerto = 0;
 }
 
 Fichero::~Fichero() {
@@ -31,7 +32,7 @@ void Fichero::leerConfig() {
 	FILE* f = fopen("../conf/propperties.cfg", "r");
 
 	if (f == NULL) {
-		cout << "ERROR AL ABRIR ARCHIVO CONFIGURACION\n" << endl;
+		cout << "ERROR AL ABRIR ARCHIVO CONFIGURACION" << endl;
 		return;
 	}
 
@@ -44,8 +45,12 @@ void Fichero::leerConfig() {
 
 		if(strcmp(clave, "DATABASE") == 0) {
 			strcpy(this->database, valor);
-		}else if(strcmp(clave, "LOG") == 0) {
+		} else if(strcmp(clave, "LOG") == 0) {
 			strcpy(this->log, valor);
+		} else if(strcmp(clave, "SERVER_IP") == 0) {
+			strcpy(this->ip, valor);
+		} else if(strcmp(clave, "SERVER_PORT") == 0) {
+			this->puerto = atoi(valor);
 		}
 	}
 }
@@ -60,6 +65,21 @@ void Fichero::setDatabase(char *database) {
 
 char* Fichero::getLog() {
 	return this->log;
+}
+
+char* Fichero::getIp() {
+	return ip;
+}
+void Fichero::setIp(char* ip) {
+	strcpy(this->ip, ip);
+}
+
+int Fichero::getPuerto() const {
+	return puerto;
+}
+
+void Fichero::setPuerto(int puerto) {
+	this->puerto = puerto;
 }
 
 void Fichero::setLog(char *log) {

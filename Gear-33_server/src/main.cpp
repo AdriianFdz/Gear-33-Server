@@ -20,9 +20,6 @@ extern "C" {
 #include "../include/Log.h"
 #include "../include/Fichero.h"
 
-#define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 6000
-
 using namespace std;
 
 int main(void) {
@@ -62,9 +59,9 @@ int main(void) {
 	logger.anadirLog("Socket creado correctamente");
 	cout << "Socket creado correctamente" << endl;
 
-	server.sin_addr.s_addr = inet_addr(SERVER_IP);
+	server.sin_addr.s_addr = inet_addr(f.getIp());
 	server.sin_family = AF_INET;
-	server.sin_port = htons(SERVER_PORT);
+	server.sin_port = htons(f.getPuerto());
 
 	if (bind(conn_socket, (struct sockaddr*) &server, sizeof(server)) == SOCKET_ERROR) {
 		char mensaje[256];
