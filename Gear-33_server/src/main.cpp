@@ -29,6 +29,7 @@ int main(void) {
 	Fichero f;
 	f.leerConfig();
 	Log logger(f.getLog());
+
 	WSADATA wsaData;
 	SOCKET conn_socket;
 	SOCKET comm_socket;
