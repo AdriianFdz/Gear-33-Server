@@ -695,6 +695,7 @@ int main(void) {
 
 		}
 		if(strcmp(recvBuff, "SALIR") == 0) {
+			logger.anadirLog("Servidor cerrado correctamente");
 			exit(0);
 		}
 
