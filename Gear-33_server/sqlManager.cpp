@@ -785,8 +785,7 @@ int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, ch
 	sqlite3 *db = abrirDB();
 	sqlite3_stmt *stmt;
 	char sql[] = "INSERT INTO Adquisicion VALUES (?, ?, ?, ?, ?, ?)";
-	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt,
-			NULL);
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
 	if (result != SQLITE_OK) {
 		printf("Error preparing statement\n");
 		printf("%s\n", sqlite3_errmsg(db));
@@ -881,7 +880,6 @@ int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, ch
 		}
 	}
 
-
 	cout << "Adquisicion con matricula " << matricula << " anadida correctamente" << endl;
 
 	sqlite3_finalize(stmt);
@@ -964,6 +962,224 @@ int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 			listaAdquisicion[contador].getCoche().setMarca((char*) sqlite3_column_text(stmt, 12));
 
 			cout<<"COCHEE: "<<listaAdquisicion[contador].getCoche().getMatricula();
+			contador++;
+		}
+	} while (result == SQLITE_ROW);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+int obtenerNumeroCochesAlquiler(int precioMin, int precioMax, int& numero, char* fechaInicio) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+	char sql[] = "SELECT count(*) FROM Coche c, Modelo mo, Marca ma LEFT JOIN Adquisicion ad ON ad.matricula = c.matricula WHERE c.id_modelo = mo.id AND mo.id_marca = ma.id AND c.estaComprado = 'false' AND c.precio_base BETWEEN ? AND ? AND ((ad.fecha_fin < ? OR ad.fecha_inicio > ?) OR ad.matricula IS NULL)";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_int(stmt, 1, precioMin);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_bind_int(stmt, 2, precioMax);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_bind_text(stmt, 3, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_bind_text(stmt, 4, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_step(stmt);
+
+	numero = sqlite3_column_int(stmt, 0);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+int obtenerNumeroCochesTotalAlquiler(int& numero, char* fechaInicio){
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT count(*) FROM Coche c, Modelo mo, Marca ma LEFT JOIN Adquisicion ad ON ad.matricula = c.matricula WHERE c.id_modelo = mo.id AND mo.id_marca = ma.id AND c.estaComprado = 'false' AND ((ad.fecha_fin < ? OR ad.fecha_inicio > ?) OR ad.matricula IS NULL)";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_text(stmt, 1, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+	result = sqlite3_bind_text(stmt, 2, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_step(stmt);
+
+	numero = sqlite3_column_int(stmt, 0);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+int obtenerCochesAlquiler(int precioMin, int precioMax, Coche* listaCoches, char* fechaInicio) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT c.matricula, c.color, c.potencia, c.precio_base, c.anyo, mo.nombre, mo.cambio, mo.combustible, ma.nombre FROM Coche c, Modelo mo, Marca ma LEFT JOIN Adquisicion ad ON ad.matricula = c.matricula WHERE c.id_modelo = mo.id AND mo.id_marca = ma.id AND c.estaComprado = 'false' AND ((ad.fecha_fin < ? OR ad.fecha_inicio > ?) OR ad.matricula IS NULL)";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_int(stmt, 1, precioMin);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_bind_int(stmt, 2, precioMax);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	result = sqlite3_bind_text(stmt, 3, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+	result = sqlite3_bind_text(stmt, 4, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	int contador = 0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			listaCoches[contador].setMatricula((char*) sqlite3_column_text(stmt, 0));
+			listaCoches[contador].setColor((char*) sqlite3_column_text(stmt, 1));
+			listaCoches[contador].setPotencia(sqlite3_column_int(stmt, 2));
+			listaCoches[contador].setPrecio(sqlite3_column_double(stmt, 3));
+			listaCoches[contador].setAnyo(sqlite3_column_int(stmt, 4));
+			listaCoches[contador].setModelo((char*) sqlite3_column_text(stmt, 5));
+			listaCoches[contador].setCambio((char*) sqlite3_column_text(stmt, 6));
+			listaCoches[contador].setCombustible((char*) sqlite3_column_text(stmt, 7));
+			listaCoches[contador].setMarca((char*) sqlite3_column_text(stmt, 8));
+			contador++;
+		}
+	} while (result == SQLITE_ROW);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+int obtenerCochesTotalAlquiler(Coche* listaCoches, char* fechaInicio) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT c.matricula, c.color, c.potencia, c.precio_base, c.anyo, mo.nombre, mo.cambio, mo.combustible, ma.nombre FROM Coche c, Modelo mo, Marca ma LEFT JOIN Adquisicion ad ON ad.matricula = c.matricula WHERE c.id_modelo = mo.id AND mo.id_marca = ma.id AND c.estaComprado = 'false' AND ((ad.fecha_fin < ? OR ad.fecha_inicio > ?) OR ad.matricula IS NULL)";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_bind_text(stmt, 1, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+	result = sqlite3_bind_text(stmt, 2, fechaInicio, strlen(fechaInicio), SQLITE_STATIC);
+	if (result != SQLITE_OK) {
+		printf("Error binding parameters\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return result;
+	}
+
+	int contador = 0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			listaCoches[contador].setMatricula((char*) sqlite3_column_text(stmt, 0));
+			listaCoches[contador].setColor((char*) sqlite3_column_text(stmt, 1));
+			listaCoches[contador].setPotencia(sqlite3_column_int(stmt, 2));
+			listaCoches[contador].setPrecio(sqlite3_column_double(stmt, 3));
+			listaCoches[contador].setAnyo(sqlite3_column_int(stmt, 4));
+			listaCoches[contador].setModelo((char*) sqlite3_column_text(stmt, 5));
+			listaCoches[contador].setCambio((char*) sqlite3_column_text(stmt, 6));
+			listaCoches[contador].setCombustible((char*) sqlite3_column_text(stmt, 7));
+			listaCoches[contador].setMarca((char*) sqlite3_column_text(stmt, 8));
 			contador++;
 		}
 	} while (result == SQLITE_ROW);

@@ -38,4 +38,13 @@ int obtenerNumeroAdquisiciones(int& numero, char* dni);
 int obtenerAdquisicionesPorDni(char* dni, Adquisicion* listaAdquisicion);
 
 int adquirirCoche(char* fecha_ini, char* fecha_fin, float precio_adquisicion, char* dni_usuario, char* matricula, char* tipo_adquisicion);
+
+/**
+ * ALQUILER
+ */
+
+int obtenerNumeroCochesAlquiler(int precioMin, int precioMax, int& numero, char* fechaInicio);
+int obtenerNumeroCochesTotalAlquiler(int& numero, char* fechaInicio);
+int obtenerCochesAlquiler(int precioMin, int precioMax, Coche* listaCoches, char* fechaInicio);
+int obtenerCochesTotalAlquiler(Coche* listaCoches, char* fechaInicio);
 #endif /* SQLMANAGER_H_ */

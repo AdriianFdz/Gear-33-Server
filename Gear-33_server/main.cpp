@@ -385,11 +385,6 @@ int main(void) {
 			char matricula[8];
 			strcpy(matricula, recvBuff);
 
-			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-			int n_dias = atoi(recvBuff);
-			/*
-			 * FALTA COMPROBAR QUE EL NUMERO DE DIAS ES MAYOR A LA FECHA FIN DEL QUE ESTA
-			 */
 			adquirirCoche(fecha_ini, fecha_fin, precio_adquisicion, dni, matricula, tipo_adquisicion);
 		}
 
@@ -405,8 +400,6 @@ int main(void) {
 		}
 
 		if(strcmp(recvBuff, "OBTENER_ADQUISICIONES_POR_DNI") == 0) {
-
-
 
 				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 				char dni[11];
@@ -465,6 +458,126 @@ int main(void) {
 					cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
 				}
 		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_POR_PRECIO_ALQUILER") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMin = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMax = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fechaInicio[11];
+			strcpy(fechaInicio, recvBuff);
+
+
+			int numeroCoches = 0;
+			obtenerNumeroCochesAlquiler(precioMin, precioMax, numeroCoches, fechaInicio);
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_TOTAL_ALQUILER") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fechaInicio[11];
+			strcpy(fechaInicio, recvBuff);
+			int numeroCoches = 0;
+			obtenerNumeroCochesTotalAlquiler(numeroCoches, fechaInicio);
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+		}
+
+		if(strcmp(recvBuff, "OBTENER_COCHES_POR_PRECIO_ALQUILER") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMin = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int precioMax = atoi(recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fechaInicio[11];
+			strcpy(fechaInicio, recvBuff);
+
+			int numeroCoches = 0;
+			obtenerNumeroCochesAlquiler(precioMin, precioMax, numeroCoches, fechaInicio);
+			Coche listaCoches[numeroCoches];
+
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			obtenerCoches(precioMin, precioMax, listaCoches);
+
+			for (int i = 0; i < numeroCoches; i++) {
+				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
+				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getColor());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getPotencia());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%f", listaCoches[i].getPrecio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getAnyo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getModelo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCambio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCombustible());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
+		}
+
+		if(strcmp(recvBuff, "OBTENER_COCHES_TOTAL_ALQUILER") == 0) {
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char fechaInicio[11];
+			strcpy(fechaInicio, recvBuff);
+
+			int numeroCoches = 0;
+			obtenerNumeroCochesTotalAlquiler(numeroCoches, fechaInicio);
+			Coche listaCoches[numeroCoches];
+			sprintf(sendBuff, "%i", numeroCoches);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			obtenerCochesTotalAlquiler(listaCoches, fechaInicio);
+
+			for (int i = 0; i < numeroCoches; i++) {
+				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
+				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getColor());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getPotencia());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%f", listaCoches[i].getPrecio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%i", listaCoches[i].getAnyo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getModelo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCambio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getCombustible());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
+		}
+
 	} while (1);
 
 
