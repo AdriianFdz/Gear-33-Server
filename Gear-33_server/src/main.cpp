@@ -694,6 +694,9 @@ int main(void) {
 			logger.anadirLog("Ciudad obtenida correctamente");
 
 		}
+		if(strcmp(recvBuff, "SALIR") == 0) {
+			exit(0);
+		}
 
 	} while (1);
 }
