@@ -16,13 +16,19 @@ extern "C" {
 #include "Coche.h"
 #include "Adquisicion.h"
 #include <iostream>
+#include "Provincia.h"
+#include "Fichero.h"
 
 using namespace std;
 
 sqlite3* abrirDB() {
 	sqlite3 *db;
 
-	int result = sqlite3_open("Gear-33.db", &db);
+	Fichero f;
+	f.leerConfig();
+
+	cout<<"DATQ: "<<f.getDatabase()<<endl;
+	int result = sqlite3_open(f.getDatabase(), &db);
 	if (result != SQLITE_OK) {
 		cout << "Error opening database" << endl;
 	}
@@ -87,9 +93,11 @@ int inicioSesion(char dni[], char contrasena[], Usuario& u) {
 	return 0;
 }
 
-int anadirUsuario(Usuario u) {
+int anadirUsuario(Usuario u, int idCiudad) {
 	sqlite3 *db = abrirDB();
 	sqlite3_stmt *stmt;
+
+
 	char sql[] = "SELECT * FROM Usuario WHERE dni = ?";
 
 	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
@@ -192,7 +200,9 @@ int anadirUsuario(Usuario u) {
 			sqlite3_close(db);
 			return result;
 		}
-		result = sqlite3_bind_int(stmt, 8, 333); // ESTO ES ALGO AÑADIDO EN LA BD
+		result = sqlite3_bind_int(stmt, 8, idCiudad); // ESTO ES ALGO AÑADIDO EN LA BD
+
+
 
 		if (result != SQLITE_OK) {
 			printf("Error binding parameters\n");
@@ -919,7 +929,6 @@ int obtenerNumeroAdquisiciones(int &numero, char *dni) {
 	return 0;
 
 }
-
 int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 	sqlite3 *db = abrirDB();
 	sqlite3_stmt *stmt;
@@ -1187,4 +1196,149 @@ int obtenerCochesTotalAlquiler(Coche* listaCoches, char* fechaInicio) {
 	sqlite3_finalize(stmt);
 	sqlite3_close(db);
 	return 0;
+}
+
+int obtenerNumeroProvincias(int *numero) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT count(*) FROM Provincia";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		return 0;
+	}
+
+	result = sqlite3_step(stmt);
+	if (result == SQLITE_ROW) {
+		*numero = sqlite3_column_int(stmt, 0);
+	}
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+int guardarProvincias(Provincia provincias[]) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	char sql[] = "SELECT * FROM Provincia";
+
+	int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+	if (result != SQLITE_OK) {
+		printf("Error preparing statement\n");
+		printf("%s\n", sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return result;
+	}
+
+
+
+	int contador = 0;
+	do {
+		result = sqlite3_step(stmt);
+		if (result == SQLITE_ROW) {
+			provincias[contador].setId(sqlite3_column_int(stmt, 0));
+			provincias[contador].setNombre((char*) sqlite3_column_text(stmt, 1));
+					;
+			contador++;
+		}
+	} while (result == SQLITE_ROW);
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+
+}
+
+int existeCiudad(char ciudad[51], int id_prov, int* id_ciudad){
+    sqlite3 *db = abrirDB();
+
+    sqlite3_stmt *stmt;
+
+    char sql[] = "SELECT * FROM Ciudad WHERE nombre = ? AND id_provincia = ?";
+
+    int result = sqlite3_prepare_v2(db, sql, strlen(sql) + 1, &stmt, NULL);
+    if (result != SQLITE_OK) {
+        printf("Error preparing statement\n");
+        printf("%s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+        return result;
+    }
+
+    result = sqlite3_bind_text(stmt, 1, ciudad, strlen(ciudad), SQLITE_STATIC);
+    result = sqlite3_bind_int(stmt, 2, id_prov);
+    if (result != SQLITE_OK) {
+    	printf("Error binding parameters\n");
+    	printf("%s\n", sqlite3_errmsg(db));
+    	sqlite3_finalize(stmt);
+    	sqlite3_close(db);
+    	return result;
+    }
+
+
+    result = sqlite3_step(stmt);
+
+    if (result == SQLITE_ROW) {
+			*id_ciudad = sqlite3_column_int(stmt, 0);
+
+		sqlite3_finalize(stmt);
+		sqlite3_close(db);
+		return 1;
+    }
+
+	sqlite3_finalize(stmt);
+	sqlite3_close(db);
+	return 0;
+}
+
+
+int anadirCiudad(char* nombreCiudad, int id_provincia, int* id_ciudad) {
+	sqlite3 *db = abrirDB();
+	sqlite3_stmt *stmt;
+
+	int resultado = existeCiudad(nombreCiudad, id_provincia, id_ciudad);
+
+	if (resultado != 0) {
+		printf("La ciudad ya existe\n");
+		return 0;
+	} else {
+		char sql2[] = "INSERT INTO Ciudad VALUES (NULL, ?, ?)";
+		int result = sqlite3_prepare_v2(db, sql2, strlen(sql2) + 1, &stmt,
+				NULL);
+		if (result != SQLITE_OK) {
+			printf("Error preparing statement\n");
+			printf("%s\n", sqlite3_errmsg(db));
+			sqlite3_close(db);
+			return result;
+		}
+
+		result = sqlite3_bind_text(stmt, 1, nombreCiudad, strlen(nombreCiudad),
+				SQLITE_STATIC);
+
+		result += sqlite3_bind_int(stmt, 2, id_provincia);
+
+		if (result != SQLITE_OK) {
+			printf("Error binding parameters\n");
+			printf("%s\n", sqlite3_errmsg(db));
+			sqlite3_finalize(stmt);
+			sqlite3_close(db);
+			return result;
+		}
+
+		result = sqlite3_step(stmt);
+		if (result != SQLITE_DONE) {
+			printf("Error inserting new data into Ciudad\n");
+			sqlite3_finalize(stmt);
+			sqlite3_close(db);
+			return result;
+		}
+
+		*id_ciudad = sqlite3_last_insert_rowid(db);
+
+		printf("Ciudad anadida correctamente\n");
+		return 0;
+	}
 }

@@ -160,10 +160,14 @@ int main(void) {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			u.setContrasena(recvBuff);
 
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			u.setIdCiudad(atoi(recvBuff));
+			int idCiudad;
+			idCiudad = atoi(recvBuff);
+
 			printf("Datos de registro recibidos\n");
 
-			anadirUsuario(u);
-
+			anadirUsuario(u, idCiudad);
 
 		}
 
@@ -401,62 +405,62 @@ int main(void) {
 
 		if(strcmp(recvBuff, "OBTENER_ADQUISICIONES_POR_DNI") == 0) {
 
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-				char dni[11];
-				strcpy(dni, recvBuff);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char dni[11];
+			strcpy(dni, recvBuff);
 
-				recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
-				int numeroAdquisiciones;
-				numeroAdquisiciones = atoi(recvBuff);
-
-
-				Adquisicion listaAdquisicion[numeroAdquisiciones];
-
-				obtenerAdquisicionesPorDni(dni, listaAdquisicion);
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int numeroAdquisiciones;
+			numeroAdquisiciones = atoi(recvBuff);
 
 
-				for (int i = 0; i < numeroAdquisiciones ; i++) {
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getTipoAdquisicion());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			Adquisicion listaAdquisicion[numeroAdquisiciones];
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaInicio());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			obtenerAdquisicionesPorDni(dni, listaAdquisicion);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaFin());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			for (int i = 0; i < numeroAdquisiciones ; i++) {
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getTipoAdquisicion());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%f", listaAdquisicion[i].getPrecioAdquisicion());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaInicio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMatricula());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getFechaFin());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getColor());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%f", listaAdquisicion[i].getPrecioAdquisicion());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getPotencia());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMatricula());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%f", listaAdquisicion[i].getCoche().getPrecio());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getColor());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getAnyo());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getPotencia());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getModelo());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%f", listaAdquisicion[i].getCoche().getPrecio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCambio());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%i", listaAdquisicion[i].getCoche().getAnyo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCombustible());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getModelo());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMarca());
-					send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCambio());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-					cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
-				}
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getCombustible());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMarca());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
+			}
+
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_POR_PRECIO_ALQUILER") == 0) {
@@ -576,6 +580,51 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+		}
+
+		if(strcmp(recvBuff, "OBTENER_NUMERO_PROVINCIAS") == 0) {
+			int numeroProvs;
+			obtenerNumeroProvincias(&numeroProvs);
+
+			sprintf(sendBuff, "%i", numeroProvs);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+		}
+
+		if(strcmp(recvBuff, "OBTENER_PROVINCIAS") == 0) {
+			int numeroProvs;
+			obtenerNumeroProvincias(&numeroProvs);
+			Provincia p[numeroProvs];
+			guardarProvincias(p);
+
+			sprintf(sendBuff, "%i", numeroProvs);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+			for (int i = 0; i < numeroProvs ; i++) {
+				sprintf(sendBuff, "%i", p[i].getId());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+
+				sprintf(sendBuff, "%s", p[i].getNombre());
+				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			}
+		}
+
+		if(strcmp(recvBuff, "ANADIR_CIUDAD") == 0) {
+			int idCiudad;
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			char nombreCiudad[51];
+			strcpy(nombreCiudad, recvBuff);
+
+			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+			int idProvincia;
+			idProvincia = atoi(recvBuff);
+
+
+			anadirCiudad(nombreCiudad, idProvincia, &idCiudad);
+
+			sprintf(sendBuff, "%i", idCiudad);
+			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 		}
 
 	} while (1);
