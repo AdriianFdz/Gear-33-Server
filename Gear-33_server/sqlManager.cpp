@@ -27,7 +27,6 @@ sqlite3* abrirDB() {
 	Fichero f;
 	f.leerConfig();
 
-	cout<<"DATQ: "<<f.getDatabase()<<endl;
 	int result = sqlite3_open(f.getDatabase(), &db);
 	if (result != SQLITE_OK) {
 		cout << "Error opening database" << endl;
@@ -63,7 +62,6 @@ int inicioSesion(char dni[], char contrasena[], Usuario& u) {
 		if (strcmp(dni, (char*) sqlite3_column_text(stmt, 0)) == 0
 				&& strcmp(contrasena, (char*) sqlite3_column_text(stmt, 6)) == 0) {
 
-			cout<<"ENTRADO"<<endl;
 
 			u.setDni((char*) sqlite3_column_text(stmt, 0));
 			u.setNombre((char*) sqlite3_column_text(stmt, 1));
@@ -970,7 +968,6 @@ int obtenerAdquisicionesPorDni(char *dni, Adquisicion *listaAdquisicion) {
 			listaAdquisicion[contador].getCoche().setCombustible((char*) sqlite3_column_text(stmt, 11));
 			listaAdquisicion[contador].getCoche().setMarca((char*) sqlite3_column_text(stmt, 12));
 
-			cout<<"COCHEE: "<<listaAdquisicion[contador].getCoche().getMatricula();
 			contador++;
 		}
 	} while (result == SQLITE_ROW);

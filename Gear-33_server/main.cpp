@@ -98,8 +98,6 @@ int main(void) {
 			char contrasena[strlen(recvBuff)] = "";
 			strcpy(contrasena, recvBuff);
 
-			cout<<dni<<endl;
-			cout<<contrasena<<endl;
 			Usuario u;
 			int resultado = inicioSesion(dni, contrasena, u);
 
