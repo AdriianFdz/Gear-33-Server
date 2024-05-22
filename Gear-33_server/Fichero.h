@@ -11,6 +11,7 @@
 class Fichero {
 private:
 	char database[100];
+	char log[100];
 public:
 	Fichero();
 	Fichero(char* database);
@@ -19,6 +20,9 @@ public:
 
 	char* getDatabase();
 	void setDatabase(char* database);
+
+	char* getLog();
+	void setLog(char* log);
 
 };
 

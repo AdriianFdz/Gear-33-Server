@@ -48,6 +48,8 @@ void Fichero::leerConfig() {
 
 		if(strcmp(clave, "DATABASE") == 0) {
 			strcpy(this->database, valor);
+		}else if(strcmp(clave, "LOG") == 0) {
+			strcpy(this->log, valor);
 		}
 	}
 }
@@ -58,4 +60,12 @@ char* Fichero::getDatabase() {
 
 void Fichero::setDatabase(char *database) {
 	strcpy(this->database, database);
+}
+
+char* Fichero::getLog() {
+	return this->getLog();
+}
+
+void Fichero::setLog(char *log) {
+	strcpy(this->log, log);
 }
