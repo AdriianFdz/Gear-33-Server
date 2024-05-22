@@ -16,15 +16,11 @@ using namespace std;
 
 Fichero::Fichero() {
 	strcpy(this->database, "");
+	strcpy(this->log, "");
 
-}
-
-Fichero::Fichero(char *database) {
-	strcpy(this->database, database);
 }
 
 Fichero::~Fichero() {
-	// TODO Auto-generated destructor stub
 }
 
 void Fichero::leerConfig() {
@@ -35,7 +31,7 @@ void Fichero::leerConfig() {
 	FILE* f = fopen("../conf/propperties.cfg", "r");
 
 	if (f == NULL) {
-		printf("ERROR AL ABRIR ARCHIVO CONFIGURACION\n");
+		cout << "ERROR AL ABRIR ARCHIVO CONFIGURACION\n" << endl;
 		return;
 	}
 
@@ -63,7 +59,7 @@ void Fichero::setDatabase(char *database) {
 }
 
 char* Fichero::getLog() {
-	return this->getLog();
+	return this->log;
 }
 
 void Fichero::setLog(char *log) {

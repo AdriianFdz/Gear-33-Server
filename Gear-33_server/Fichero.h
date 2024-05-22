@@ -14,7 +14,6 @@ private:
 	char log[100];
 public:
 	Fichero();
-	Fichero(char* database);
 	virtual ~Fichero();
 	void leerConfig();
 

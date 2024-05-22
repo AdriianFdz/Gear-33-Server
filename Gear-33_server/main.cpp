@@ -17,6 +17,8 @@ extern "C" {
 #include "sqlManager.h"
 #include "Usuario.h"
 #include "Coche.h"
+#include "Log.h"
+#include "Fichero.h"
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 6000
@@ -24,6 +26,12 @@ extern "C" {
 using namespace std;
 
 int main(void) {
+	/*
+	 * CONFIGURAR LOGGER
+	 */
+	Fichero f;
+	f.leerConfig();
+	Log logger(f.getLog());
 	WSADATA wsaData;
 	SOCKET conn_socket;
 	SOCKET comm_socket;
@@ -33,17 +41,25 @@ int main(void) {
 
 	cout << "Iniciando libreria socket\n" << endl;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-		cout << " No se ha podido inicializar la libreria socket. Codigo de error: " << WSAGetLastError() << endl;
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "No se ha podido inicializar la libreria socket. Codigo de error: %d", WSAGetLastError());
+		logger.anadirLog(mensaje);
+		cout << "No se ha podido inicializar la libreria socket. Codigo de error: " << WSAGetLastError() << endl;
 		return -1;
 	}
+	logger.anadirLog("Libreria socket inicializada");
 	cout << "Libreria socket inicializada" << endl;
 
 	//SOCKET creation
 	if ((conn_socket = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "No se ha podido crear el socket. Codigo de error: %d", WSAGetLastError());
+		logger.anadirLog(mensaje);
 		cout << "No se ha podido crear el socket. Codigo de error: " << WSAGetLastError() << endl;
 		WSACleanup();
 		return -1;
 	}
+	logger.anadirLog("Socket creado correctamente");
 	cout << "Socket creado correctamente" << endl;
 
 	server.sin_addr.s_addr = inet_addr(SERVER_IP);
@@ -51,15 +67,22 @@ int main(void) {
 	server.sin_port = htons(SERVER_PORT);
 
 	if (bind(conn_socket, (struct sockaddr*) &server, sizeof(server)) == SOCKET_ERROR) {
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "Error al vincular el socket. Codigo de error: %d", WSAGetLastError());
+		logger.anadirLog(mensaje);
 		cout << "Error al vincular el socket. Codigo de error: " << WSAGetLastError() <<endl;
 		closesocket(conn_socket);
 		WSACleanup();
 		return -1;
 	}
+	logger.anadirLog("Bindeo realizado correctamente");
 	cout << "Bindeo realizado correctamente" << endl;
 
 	//LISTEN to incoming connections (socket server moves to listening mode)
 	if (listen(conn_socket, 1) == SOCKET_ERROR) {
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "Error al activar modo escucha. Codigo de error: %d", WSAGetLastError());
+		logger.anadirLog(mensaje);
 		cout << "Error al activar modo escucha. Codigo de error: " << WSAGetLastError() <<endl;
 		closesocket(conn_socket);
 		WSACleanup();
@@ -67,26 +90,38 @@ int main(void) {
 	}
 
 	//ACCEPT incoming connections (server keeps waiting for them)
+	logger.anadirLog("Esperando a conexiones del cliente...");
 	cout << "Esperando a conexiones del cliente..." << endl;
 	int stsize = sizeof(struct sockaddr);
 	comm_socket = accept(conn_socket, (struct sockaddr*) &client, &stsize);
 
 	if (comm_socket == INVALID_SOCKET) {
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "Error al aceptar conexion del cliente. Codigo de error: %d", WSAGetLastError());
+		logger.anadirLog(mensaje);
 		cout << "Error al aceptar conexion del cliente. Codigo de error: " << WSAGetLastError() << endl;
 		closesocket(conn_socket);
 		WSACleanup();
 		return -1;
 	}
-
+	char mensaje[256];
+	snprintf(mensaje, sizeof(mensaje), "Conexion entrante por: %s (%i)", inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+	logger.anadirLog(mensaje);
 	cout << "Conexion entrante por: " << inet_ntoa(client.sin_addr) << " (" << ntohs(client.sin_port) << ")" << endl;
 
 	// Closing the listening sockets (is not going to be used anymore)
 	closesocket(conn_socket);
 
+	logger.anadirLog("Esperando comandos del cliente...");
 	cout << "Esperando comandos del cliente..." << endl;
 
 	do {
 		recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
+		logger.anadirLog("Esperando comandos del cliente...");
+
+		char mensaje[256];
+		snprintf(mensaje, sizeof(mensaje), "Comando recibido: %s", recvBuff);
+		logger.anadirLog(mensaje);
 		cout << "Comando recibido: " << recvBuff << endl;
 
 		if (strcmp(recvBuff, "COMP_INICIO_SESION") == 0) {
@@ -100,12 +135,6 @@ int main(void) {
 
 			Usuario u;
 			int resultado = inicioSesion(dni, contrasena, u);
-
-			/*
-			 * Aqui tendrias que hacer varios
-			 * sprintf de cada propiedad del usuario u
-			 * enviandola al cliente una a una
-			 */
 
 			sprintf(sendBuff, "%s", u.getDni());
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
@@ -124,14 +153,10 @@ int main(void) {
 			sprintf(sendBuff, "%d", u.getIdCiudad());
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
+			logger.anadirLog("Datos de inicio de sesion recibidos");
 
 			sprintf(sendBuff, "%d", resultado);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
-
-
-
-
-			printf("Respuesta enviada: %s \n", sendBuff);
 
 		}
 
@@ -163,7 +188,7 @@ int main(void) {
 			int idCiudad;
 			idCiudad = atoi(recvBuff);
 
-			printf("Datos de registro recibidos\n");
+			logger.anadirLog("Datos de registro recibidos");
 
 			anadirUsuario(u, idCiudad);
 
@@ -178,6 +203,7 @@ int main(void) {
 			char nombreNuevo[strlen(recvBuff)] = "";
 			strcpy(nombreNuevo, recvBuff);
 
+			logger.anadirLog("Nombre recibido");
 			modificarNombreUsuario(dni, nombreNuevo);
 
 		}
@@ -191,6 +217,8 @@ int main(void) {
 			char dniNuevo[strlen(recvBuff)] = "";
 			strcpy(dniNuevo, recvBuff);
 
+			logger.anadirLog("DNIs recibidos");
+
 			modificarDniUsuario(dni, dniNuevo);
 		}
 
@@ -202,6 +230,8 @@ int main(void) {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			char apellidoNuevo[strlen(recvBuff)] = "";
 			strcpy(apellidoNuevo, recvBuff);
+
+			logger.anadirLog("Apellido recibido");
 
 			modificarApellidoUsuario(dni, apellidoNuevo);
 		}
@@ -215,6 +245,7 @@ int main(void) {
 			char fechaNueva[strlen(recvBuff)] = "";
 			strcpy(fechaNueva, recvBuff);
 
+			logger.anadirLog("Fecha de nacimiento recibido");
 			modificarFechaUsuario(dni, fechaNueva);
 		}
 
@@ -227,6 +258,7 @@ int main(void) {
 			char direccionNueva[strlen(recvBuff)] = "";
 			strcpy(direccionNueva, recvBuff);
 
+			logger.anadirLog("Direccion recibida");
 			modificarDireccionUsuario(dni, direccionNueva);
 		}
 
@@ -239,6 +271,7 @@ int main(void) {
 			char telefonoNuevo[strlen(recvBuff)] = "";
 			strcpy(telefonoNuevo, recvBuff);
 
+			logger.anadirLog("Telefono recibido");
 			modificarTelefonoUsuario(dni, telefonoNuevo);
 		}
 
@@ -251,6 +284,7 @@ int main(void) {
 			char contrasenaNueva[strlen(recvBuff)] = "";
 			strcpy(contrasenaNueva, recvBuff);
 
+			logger.anadirLog("Contrasena recibida");
 			modificarContrasenaUsuario(dni, contrasenaNueva);
 		}
 
@@ -263,6 +297,7 @@ int main(void) {
 			int idCiudad;
 			idCiudad = atoi(recvBuff);
 
+			logger.anadirLog("Ciudad recibida");
 			modificarCiudadUsuario(dni, idCiudad);
 		}
 
@@ -276,6 +311,7 @@ int main(void) {
 			obtenerNumeroCoches(precioMin, precioMax, numeroCoches);
 			sprintf(sendBuff, "%i", numeroCoches);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Numero de coches por precios enviados");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_COCHES_POR_PRECIO") == 0) {
@@ -294,7 +330,6 @@ int main(void) {
 			obtenerCoches(precioMin, precioMax, listaCoches);
 
 			for (int i = 0; i < numeroCoches; i++) {
-				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
 				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
@@ -322,6 +357,7 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+			logger.anadirLog("Coches por precio enviados");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_TOTAL") == 0) {
@@ -329,6 +365,7 @@ int main(void) {
 			obtenerNumeroCochesTotal(numeroCoches);
 			sprintf(sendBuff, "%i", numeroCoches);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Numero de coches enviados");
 		}
 
 
@@ -345,7 +382,6 @@ int main(void) {
 			obtenerCochesTotal(listaCoches);
 
 			for (int i = 0; i < numeroCoches; i++) {
-				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
 				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
@@ -373,6 +409,7 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+			logger.anadirLog("Numero de coches enviados");
 		}
 
 		if(strcmp(recvBuff, "ADQUIRIR_COCHE") == 0) {
@@ -400,6 +437,7 @@ int main(void) {
 			strcpy(matricula, recvBuff);
 
 			adquirirCoche(fecha_ini, fecha_fin, precio_adquisicion, dni, matricula, tipo_adquisicion);
+			logger.anadirLog("Adquisicion coche realizada correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_ADQUISICIONES_POR_DNI") == 0) {
@@ -468,9 +506,8 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaAdquisicion[i].getCoche().getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
-				cout << "Adquisicion: " << i << ": " << listaAdquisicion[i].getCoche().getMatricula() << endl;
 			}
-
+			logger.anadirLog("Numero de adquisiciones por DNI realizadas correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_POR_PRECIO_ALQUILER") == 0) {
@@ -487,6 +524,7 @@ int main(void) {
 			obtenerNumeroCochesAlquiler(precioMin, precioMax, numeroCoches, fechaInicio);
 			sprintf(sendBuff, "%i", numeroCoches);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Numero de coches por precios enviados correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_COCHES_TOTAL_ALQUILER") == 0) {
@@ -497,6 +535,7 @@ int main(void) {
 			obtenerNumeroCochesTotalAlquiler(numeroCoches, fechaInicio);
 			sprintf(sendBuff, "%i", numeroCoches);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Numero de coches enviados correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_COCHES_POR_PRECIO_ALQUILER") == 0) {
@@ -518,7 +557,6 @@ int main(void) {
 			obtenerCoches(precioMin, precioMax, listaCoches);
 
 			for (int i = 0; i < numeroCoches; i++) {
-				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
 				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
@@ -546,6 +584,7 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+			logger.anadirLog("Coches por precio enviados correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_COCHES_TOTAL_ALQUILER") == 0) {
@@ -562,7 +601,6 @@ int main(void) {
 			obtenerCochesTotalAlquiler(listaCoches, fechaInicio);
 
 			for (int i = 0; i < numeroCoches; i++) {
-				cout << "Coche " << i << ": " << listaCoches[i].getMatricula() << endl;
 				sprintf(sendBuff, "%s", listaCoches[i].getMatricula());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 
@@ -590,6 +628,7 @@ int main(void) {
 				sprintf(sendBuff, "%s", listaCoches[i].getMarca());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+			logger.anadirLog("Coches enviados correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_NUMERO_PROVINCIAS") == 0) {
@@ -598,6 +637,7 @@ int main(void) {
 
 			sprintf(sendBuff, "%i", numeroProvs);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Numero de provincias obtenidas correctamente");
 
 		}
 
@@ -617,6 +657,7 @@ int main(void) {
 				sprintf(sendBuff, "%s", p[i].getNombre());
 				send(comm_socket, sendBuff, sizeof(sendBuff), 0);
 			}
+			logger.anadirLog("Provincias obtenidas correctamente");
 		}
 
 		if(strcmp(recvBuff, "ANADIR_CIUDAD") == 0) {
@@ -635,6 +676,7 @@ int main(void) {
 
 			sprintf(sendBuff, "%i", idCiudad);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Ciudad anadida correctamente");
 		}
 
 		if(strcmp(recvBuff, "OBTENER_CIUDAD") == 0) {
@@ -644,19 +686,15 @@ int main(void) {
 			recv(comm_socket, recvBuff, sizeof(recvBuff), 0);
 			idCiudad = atoi(recvBuff);
 
-
 			//Funcion bd
 			obtenerCiudad(idCiudad, nombreCiudad);
 
-
 			sprintf(sendBuff, "%s", nombreCiudad);
 			send(comm_socket, sendBuff, sizeof(sendBuff), 0);
+			logger.anadirLog("Ciudad obtenida correctamente");
 
 		}
 
 	} while (1);
-
-
-
 }
 
