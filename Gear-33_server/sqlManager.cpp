@@ -17,13 +17,18 @@ extern "C" {
 #include "Adquisicion.h"
 #include <iostream>
 #include "Provincia.h"
+#include "Fichero.h"
 
 using namespace std;
 
 sqlite3* abrirDB() {
 	sqlite3 *db;
 
-	int result = sqlite3_open("Gear-33.db", &db);
+	Fichero f;
+	f.leerConfig();
+
+	cout<<"DATQ: "<<f.getDatabase()<<endl;
+	int result = sqlite3_open(f.getDatabase(), &db);
 	if (result != SQLITE_OK) {
 		cout << "Error opening database" << endl;
 	}
